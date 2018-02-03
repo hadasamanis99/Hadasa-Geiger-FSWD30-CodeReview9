@@ -1,0 +1,319 @@
+-- Structure of file:
+--
+-- table creation statements
+--
+-- insert statements (for test data)
+--
+-- further statements (as of task nr. 4)
+--
+-- 2 JOIN statements (for additional points)
+------------------------------------------------
+------------------------------------------------
+------------------------------------------------
+-- Basic points, nr. 2 -- create tables
+
+CREATE TABLE location (
+    pk_Location_id int NOT NULL,
+    street_name varchar(500) NOT NULL,
+    City varchar(100) NOT NULL,
+    State varchar(50),
+    Country varchar(50),
+    Zip varchar(25),
+    PRIMARY KEY (pk_Location_id)    
+); 
+
+
+CREATE TABLE customer (
+    pk_Customer_id int NOT NULL,
+    name varchar(500) NOT NULL,
+    birthdate date NOT NULL,
+    License_No varchar(50),
+    PRIMARY KEY (pk_Customer_id)    
+);
+
+
+CREATE TABLE car (
+    pk_Car_id int NOT NULL,
+    fk_Car_Location int NOT NULL,
+    brand  varchar(50),
+    Type varchar(50),
+    Year_production int,
+    mileage int,
+    color varchar(50),
+    PRIMARY KEY (pk_Car_id),
+    FOREIGN KEY (fk_Car_Location) REFERENCES location(pk_Location_id)   
+);
+
+
+CREATE TABLE management (
+    pk_Management_id int NOT NULL,
+    fk_Customer_id int NOT NULL,
+    fk_car_id int NOT NULL,
+    fk_pickup_location_id int NOT NULL,
+    fk_dropoff_location_id int NOT NULL,
+    startdate date NOT NULL,
+    enddate date,
+    PRIMARY KEY (pk_Management_id),
+    FOREIGN KEY (fk_Customer_id) REFERENCES customer(pk_Customer_id),  
+    FOREIGN KEY (fk_car_id) REFERENCES car(pk_Car_id),
+    FOREIGN KEY (fk_pickup_location_id) REFERENCES location(pk_Location_id),  
+    FOREIGN KEY (fk_dropoff_location_id) REFERENCES location(pk_Location_id)   
+);
+
+CREATE TABLE invoice (
+    invoice_id int NOT NULL,
+    fk_Management_id int NOT NULL,
+    car_rent_cents int NOT NULL,
+    insurancecost_total_cents int NOT NULL,
+    service_tax int NOT NULL,
+    vat int NOT NULL,
+    payable_total_cents int NOT NULL,
+    discount_cents int NOT NULL,
+    net_total_cents int NOT NULL,
+    PRIMARY KEY (invoice_id),
+    FOREIGN KEY (fk_Management_id) REFERENCES management(pk_Management_id)   
+);
+
+CREATE TABLE reservation (
+    pk_Reservation_id int NOT NULL,
+    fk_Customer_id int NOT NULL,
+    fk_Pickup_location_id int NOT NULL,
+    fk_Dropoff_location_id int NOT NULL,
+    PRIMARY KEY (pk_Reservation_id),
+    FOREIGN KEY (fk_Customer_id) REFERENCES customer(pk_Customer_id),  
+    FOREIGN KEY (fk_Pickup_location_id) REFERENCES location(pk_Location_id),  
+    FOREIGN KEY (fk_Dropoff_location_id) REFERENCES location(pk_Location_id)   
+);
+
+CREATE TABLE insurance (
+    pk_Insurance_id int NOT NULL,
+    Name varchar(100) NOT NULL,
+    Policy varchar(500) NOT NULL,
+    PRIMARY KEY (pk_Insurance_id)
+);
+
+CREATE TABLE rental_insurance (
+    pk_Rental_Insurance_id int NOT NULL,
+    fk_Rental_Insurance_id int NOT NULL,
+    fk_Insurance_id int NOT NULL,
+    PRIMARY KEY (pk_Rental_Insurance_id),
+    FOREIGN KEY (fk_Rental_Insurance_id) REFERENCES management(pk_Management_id),  
+    FOREIGN KEY (fk_Insurance_id) REFERENCES insurance(pk_Insurance_id)   
+);
+
+------------------------------------------------
+------------------------------------------------
+------------------------------------------------
+-- Basic points, nr. 3 -- insert test data
+
+INSERT INTO location (
+    pk_Location_id,
+    street_name,
+    City,
+    State,
+    Country,
+    Zip)
+values (1,'Anichstrasse 1', 'Innsbruck','Tirol','Austria','5020');
+
+INSERT INTO location (
+    pk_Location_id,
+    street_name,
+    City,
+    State,
+    Country,
+    Zip)
+values (2,'Geibelgasse 1', 'Wien','Tirol','Austria','1150');
+
+
+INSERT INTO  customer (
+    pk_Customer_id ,
+    name,
+    birthdate,
+    License_No)
+values (1,'Inge Lutz', '1968-11-11','5020xxxx');
+
+INSERT INTO  customer (
+    pk_Customer_id ,
+    name,
+    birthdate,
+    License_No)
+values (2,'Josef Lutz', '1965-10-11','5020yyyy');
+
+
+INSERT INTO car (
+    pk_Car_id,
+    fk_Car_Location,
+    brand,
+    Type,
+    Year_production,
+    mileage,
+    color)
+values (1,1,'VW', 'Golf',1999,30000,'Rostfarben');
+
+INSERT INTO car (
+    pk_Car_id,
+    fk_Car_Location,
+    brand,
+    Type,
+    Year_production,
+    mileage,
+    color)
+values (2,2,'Daihatsu', 'Charade',2015,10000,'Blau');
+
+
+INSERT INTO management (
+    pk_Management_id,
+    fk_Customer_id,
+    fk_car_id,
+    fk_pickup_location_id,
+    fk_dropoff_location_id,
+    startdate)
+values (1,1,1, 2,1,'2018-01-01');
+
+INSERT INTO management (
+    pk_Management_id,
+    fk_Customer_id,
+    fk_car_id,
+    fk_pickup_location_id,
+    fk_dropoff_location_id,
+    startdate)
+values (2,2,2, 2,1,'2018-01-01');
+
+
+
+INSERT INTO invoice (
+    invoice_id,
+    fk_Management_id,
+    car_rent_cents,
+    insurancecost_total_cents,
+    vat,
+    payable_total_cents,
+    discount_cents)
+values (1,1,10000,100,20,12120,0);
+
+
+INSERT INTO invoice (
+    invoice_id,
+    fk_Management_id,
+    car_rent_cents,
+    insurancecost_total_cents,
+    vat,
+    payable_total_cents,
+    discount_cents)
+values (2,2,10000,100,20,12120,0);
+
+
+INSERT INTO insurance (
+    pk_Insurance_id,
+    Name,
+    Policy
+)
+values (1,'Autoversicherungen GmbH','Spezieller Tarif XYZ');
+
+INSERT INTO insurance (
+    pk_Insurance_id,
+    Name,
+    Policy
+)
+values (2,'Superversicherungen GmbH','Super-Spezieller Tarif XYZ');
+
+INSERT INTO rental_insurance (
+    pk_Rental_Insurance_id,
+    fk_Rental_Insurance_id,
+    fk_Insurance_id
+ )
+values (1,1,1);
+INSERT INTO rental_insurance (
+    pk_Rental_Insurance_id,
+    fk_Rental_Insurance_id,
+    fk_Insurance_id
+ )
+values (2,2,2);
+
+
+
+------------------------------------------------
+------------------------------------------------
+------------------------------------------------
+-- Basic points, nr. 4 -- SQL statements
+
+update invoice set 
+    fk_Management_id=1,
+    car_rent_cents=10000,
+    insurancecost_total_cents=100,
+    vat=20,
+    payable_total_cents=12120,
+    discount_cents=0
+where invoice_id=1;
+
+update invoice set 
+    fk_Management_id=2,
+    car_rent_cents=10000,
+    insurancecost_total_cents=100,
+    vat=20,
+    payable_total_cents=12120,
+    discount_cents=0
+where invoice_id=2;
+
+
+-- Count Customers etc
+select count(*) from customer;
+select count(*) from location;
+select count(*) from car;
+select count(*) from management;
+select count(*) from insurance;
+select count(*) from invoice;
+
+-- Sum of payable_total_cents, in euro
+select sum(payable_total_cents)/100
+from invoice;
+
+-- Average of payable_total_cents, in euro
+select avg(payable_total_cents)/100
+from invoice;
+
+-- Distinct cities
+select distinct(City)
+from location;
+
+
+------------------------------------------------
+------------------------------------------------
+------------------------------------------------
+-- Additional points, Joins
+
+-- Inner Join Brand/Payable total
+select car.brand, invoice.payable_total_cents
+from car
+INNER JOIN management ON management.fk_car_id=car.pk_Car_id 
+INNER JOIN invoice ON invoice.fk_Management_id=management.pk_Management_id; 
+--+----------+---------------------+
+--| brand    | payable_total_cents |
+--+----------+---------------------+
+--| VW       |               12120 |
+--| Daihatsu |               12120 |
+--+----------+---------------------+
+--2 rows in set (0.00 sec)
+
+-- Inner Join Customer/Pickup Location
+select customer.name, location.street_name, location.City, location.State
+from customer
+INNER JOIN management ON management.fk_Customer_id=customer.pk_Customer_id 
+INNER JOIN location ON location.pk_Location_id=management.fk_pickup_location_id;
+--+------------+---------------+------+-------+
+--| name       | street_name   | City | State |
+--+------------+---------------+------+-------+
+--| Inge Lutz  | Geibelgasse 1 | Wien | Tirol |
+--| Josef Lutz | Geibelgasse 1 | Wien | Tirol |
+--+------------+---------------+------+-------+
+--2 rows in set (0.00 sec)
+update location
+set State = 'Wien'
+where City = 'Wien';
+
+
+
+
+
+
+
